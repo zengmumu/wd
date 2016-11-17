@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="css/ionic.css" />
+		<script src="js/ionic.bundle.js"></script>
+		 <!--<link href="http://www.runoob.com/static/ionic/css/ionic.min.css" rel="stylesheet">
+        <script src="http://www.runoob.com/static/ionic/js/ionic.bundle.min.js"></script>-->
+        <script src="js/angular/angular-animate.min.js"></script>
+        <script src="js/jquery-2.0.2.js"></script>
+        <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=5efbda3075d474c2aa578775121667f0"></script>
+        <style>
+        	.item-avatar .item-content > img:first-child{ border-radius: 0;}
+        	.chat-list{ max-width: 80%; list-style: none; clear: both; margin-bottom: 10px;}
+        	.pull-right{ float: right;}
+        	.pull-left{ float: left;}
+        	.avatar{ max-width: 38px; max-height: 38px;}
+        	.chat-wrap{padding: 14px; border-radius: 6px;  background-color: limegreen; color: #fff;; }
+        	.ml{ margin-left: 48px; text-align:left; position: relative;}
+        	.mr{margin-right:48px ; text-align: right; position: relative;}
+        	.mr:before{content:"";display:block; width: 0;
+        	height: 0;position: absolute;right:-16px;top:10px; border:8px solid transparent; border-left-color:limegreen;}
+        	.ml:before{content:"";display:block; width: 0;
+        	height: 0;position: absolute;left:-16px;top:10px; border:8px solid transparent; border-right-color:#fff;}
+        	.write-box{ position:absolute; bottom:0;left:0; min-height: 49px; width: 100%; display: flex; z-index: 1000; background-color: #f0f0f0; border-top:1px solid #f7f7f7;}
+        	.write-box textarea{ flex:1; height: 49px; padding:5px;}
+        	.has-header-bar{ margin-bottom: 49px;}
+        	.ml.chat-wrap{ background-color:#fff; color: #333;}
+        	
+        	 .abcNav{ position: fixed; right: 10px; top:50px; z-index: 100; width: 20px; text-align: center;}
+        .abcNav li.active{ width: 20px;height:20px; border-radius: 20px; background-color: red; color: #fff;  line-height: 20px;}
+        	.card-nomaring{ margin: 0;}
+			.item .item-gray{ font-size: 8px; color: #aaa;}
+			.navABC{ position:fixed; right:15px;top:50px; width: 18px; z-index: 50; text-align: center;}
+			.navABC .active{ background-color: orangered;
+		color: #fff;
+		height: 18px; width: 18px; border-radius: 18px;}
+		
+		.item .badge { top:10px; left:40px!important; max-width: 24px;}
+		/*.modal { min-height: inherit; top: 25%; left: 20%; transform: translate(-50%,-50%); width: 60%;}
+		.modal-backdrop{ background-color: rgba(0,0,0,.3);}*/
+		
+        	
+        </style>
+		
+		</head>
+		<body ng-controller="mainCtrl">
+		<ion-nav-bar class="bar-dark">
+			<ion-nav-back-button ng-click="showMyTab()" ></ion-nav-back-button>
+			<ion-nav-buttons side="right">
+		    <button ng-click="openPopover($event)" class="button icon icon-button ion-ios-plus-empty button-clear"></button>
+    		</ion-nav-buttons>
+			
+		</ion-nav-bar>	
+		
+		<ion-nav-view></ion-nav-view>
+		
+
+			<script>
+				angular.module("myApp", ["ngAnimate","ionic"])
+					.controller("mainCtrl", function($scope,$ionicTabsDelegate,$ionicHistory,$ionicPopover) {
+						$scope.showMyTab=function(){
+							
+							 $ionicHistory.goBack();
+							$ionicTabsDelegate.$getByHandle('mytab').showBar(true);
+							
+						}
+ $ionicPopover.fromTemplateUrl('tpls/popover.html', {
+    scope: $scope
+  }).then(function(popover) {
+    $scope.popover = popover;
+  });
+  $scope.openPopover = function($event) {
+  	
+    $scope.popover.show($event);
+  };
+		
+				
+            	
+         		})
+				.controller("wechatCtrl",function($scope,$ionicModal){
+					$scope.wechatList=[
+					{id:1,avatar:"images/w1.jpg",name:"洋仔",des:"我是洋仔的一条信息"},
+					{id:2,avatar:"images/w2.jpg",name:"谭飞飞",des:"我是谭飞飞的一条信息"},
+					{id:3,avatar:"images/w3.jpg",name:"娜娜",des:"我是娜娜的一条信息"},
+					];
+					$ionicModal
+						.fromTemplateUrl(
+						"tpls/modal.html",
+						{scope:$scope})
+						.then(function(modal){
+					  		$scope.modal=modal;
+					    })
+					$scope.showModal=function(item){
+						$scope.currenItem=item;
+						$scope.modal.show();
+						 
+					}
+					$scope.toTopItem=function(){
+						for(var i=0;i<$scope.wechatList.length;i++){
+							if($scope.currenItem.id==$scope.wechatList[i].id){
+								$scope.wechatList.splice(i,1);
+								$scope.wechatList.unshift($scope.currenItem);
+								break;
+							}
+						}
+						 $scope.modal.hide();
+					}
+					$scope.deleteItem=function(){
+						for(var i=0;i<$scope.wechatList.length;i++){
+							if($scope.currenItem.id==$scope.wechatList[i].id){
+								$scope.wechatList.splice(i,1);								
+								break;
+							}
+						}
+						 $scope.modal.hide();
+					}
+					//pop over
+	
+
+  // .fromTemplateUrl() method
+			
+				})
+				.controller("chatCtrl",function($scope,$stateParams,$ionicTabsDelegate,$timeout, $ionicScrollDelegate){
+					$scope.currentChatItem=$stateParams.chatId;
+					$ionicTabsDelegate.$getByHandle('mytab').showBar(false);
+					$scope.chatMsg=[
+					{type:0,msg:"你好喜欢ionic"},
+					{type:1,msg:"相比下我还是比较喜欢的"},
+					{type:0,msg:"你还知道其他手机框架吗？"},
+					{type:1,msg:"知道啊，reactNaive，jqMobile ，mui"},
+					{type:0,msg:"你好这是个测试lLorem ipsum dolor sit amet, consectetur adipisicing elit. Nam delectus blanditiis aspernatur esse nostrum possimus magnam sequi harum magni libero maiores tempore expedita praesentium dolores necessitatibus velit fugiat! Esse recusandae!"},
+				
+					];
+					$scope.sendMsg=function(){
+						$scope.chatMsg.push({type:1,msg:$scope.msg});
+						$scope.msg="";
+						$timeout(function(){
+							$scope.chatMsg.push({type:0,msg:Math.random()})
+							$ionicScrollDelegate.scrollBottom();	
+						},800)
+					 $ionicScrollDelegate.scrollBottom();	
+						
+					}
+				})
+				.config(function($stateProvider,$urlRouterProvider,$ionicConfigProvider){
+					$ionicConfigProvider.platform.ios.tabs.style('standard');  
+			        $ionicConfigProvider.platform.ios.tabs.position('bottom');  
+			        $ionicConfigProvider.platform.android.tabs.style('standard');  
+			        $ionicConfigProvider.platform.android.tabs.position('standard');  
+			  
+			        $ionicConfigProvider.platform.ios.navBar.alignTitle('center');  
+			        $ionicConfigProvider.platform.android.navBar.alignTitle('left');  
+			  
+			        $ionicConfigProvider.platform.ios.backButton.previousTitleText('').icon('ion-ios-arrow-thin-left');  
+			        $ionicConfigProvider.platform.android.backButton.previousTitleText('').icon('ion-android-arrow-back');  
+			  
+			        $ionicConfigProvider.platform.ios.views.transition('ios');  
+			        $ionicConfigProvider.platform.android.views.transition('android');  
+					$stateProvider
+					.state(
+						"tabs",
+						{url:"/tab",
+						 templateUrl:"tpls/tabs.html"
+					})
+					.state(
+						"tabs.wechat",
+							{
+							 	url:"/wechat",
+						 		views:{"wechat":{templateUrl:"tpls/wechat.html"}
+						 		}
+						 	}
+						
+					)
+					.state(
+						"tabs.chat",
+							{
+							 	url:"/chat/{chatId:[0-9]{1,4}}",
+						 		views:{"wechat":{templateUrl:"tpls/chat.html"}
+						 		}
+						 	}
+						
+					)
+					.state(
+						"tabs.detail",
+							{
+							 	url:"/detail",
+						 		views:{"wechat":{templateUrl:"tpls/detail.html"}
+						 		}
+						 	}
+						
+					)
+					.state(
+						"tabs.contact",
+							{
+							 	url:"/contact",
+						 		views:{"contact":{templateUrl:"tpls/contact.html"}
+						 		}
+						 	}
+						
+					)
+					.state(
+						"tabs.find",
+							{
+							 	url:"/find",
+						 		views:{"find":{templateUrl:"tpls/find.html"}
+						 		}
+						 	}
+						
+					)
+					.state(
+						"tabs.map",
+						{
+							url:"/map",
+						 	views:{"find":{templateUrl:"tpls/map2.html"}
+					 		}
+						 }
+						
+					)
+					.state(
+						"tabs.tax",
+						{
+							url:"/tax",
+						 	views:{"find":{templateUrl:"tpls/tax.html"}
+					 		}
+						 }
+						
+					)
+					
+					$urlRouterProvider.otherwise("/tab/wechat")
+					
+					
+					
+				})
+				.controller("cityCtrl",function($scope,$http,$ionicScrollDelegate,$ionicLoading){
+             /*   $scope.cityslist={"citys":[
+                    {"list":["九江","九城"],"key":"j"},{"list":["昆明","开封"],"key":"k"}
+                ]};*/
+               // $scope.cityslist={};
+                $scope.citys=[];
+                $scope.abcArr="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+                $http.get("js/cityList.json")
+                        .success(function(data){
+                            for(var i=0;i< $scope.abcArr.length;i++){
+                                var alpha= $scope.abcArr[i];
+                                var obj={};
+                                obj.key=alpha;
+                                obj.list=[]
+
+                                for(var k in data.citys){
+                                  var cap=data.citys[k].pinyin.substr(0,1).toUpperCase();
+                                   if(cap==alpha){
+                                   obj.list.push(data.citys[k].city);
+                                   }
+                                }
+                                $scope.citys.push(obj);
+
+                            }
+                              //console.log(data.citys);
+                              console.log( $scope.citys);
+                        })
+                $scope.curIndex=0;
+                $scope.goABC=function(index,event){
+                    $scope.curIndex=index;
+//                    var target=angular.element(event.target).text();
+                    var target=$(event.target).text();
+                   var top=$(".dividerABC:contains('"+target+"')").offset().top;
+                    console.log(top);
+                    $ionicScrollDelegate.$getByHandle('mainScroll').scrollBy(0, top-43);
+
+                }
+                $scope.checkPosition=function(){
+                    var id="";//abc
+               $(".dividerABC").each(function(){//循环每一个divider
+                  var top=$(this).offset().top;//该元素距离顶部的距离
+
+                   if(top<43){//如果距离小于50
+                       id=$(this).text();//获取文本
+//                       console.log(id);
+                       return ;
+                   }else{
+                       return false;
+                   }
+               })//for ed
+                    $(".abcNav li.active").removeClass("active");
+                    $(".abcNav li."+id).addClass("active");
+
+                }
+            })
+			.controller("findCtrl",function($scope,$ionicModal){
+				$ionicModal.fromTemplateUrl("tpls/map.html",{
+						scope:$scope
+					})
+					.then(function(modal){$scope.modal2=modal});
+					$scope.showModal=function(){
+						$scope.modal2.show();
+						(function(){
+            var iframe = document.getElementById('test').contentWindow;
+            setTimeout(function(){         	
+            	
+                iframe.postMessage('hello','http://m.amap.com/picker/');
+            },500)
+            window.addEventListener("message", function(e){
+               $scope.detailLocation=e.data;
+//                alert(JSON.stringify(e.data))
+					
+                $scope.modal2.hide();
+              
+            }, false);
+            }()	)
+					}
+//					$scope.$on('modal.hidden', function() {
+//						$scope.detailLocation=window.detailLocation;    // Execute action
+//				 });
+				  	
+ 
+				
+			})
+			.controller("taxCtrl",function($scope,$ionicModal){
+				var lalo=[];     
+    AMap.plugin('AMap.Geocoder',function(){    	
+        var geocoder = new AMap.Geocoder({
+            city: "010"//城市，默认：“全国”
+        });
+        
+          //获取地理位置
+  function getLocation(){
+        if (navigator.geolocation){        	
+            navigator.geolocation.getCurrentPosition(function(position){
+             lalo=[ position.coords.latitude, position.coords.longitude]	
+            });
+        }else{
+           lalo=[116.39,35.9]
+        }
+    }
+		getLocation();
+    //获取地址位置
+    if(lalo.length<=0){lalo=[116.30,39.9]};
+  
+         geocoder.getAddress(lalo,function(status,result){
+         	console.log(result.regeocode);
+//        myLocation.value=result.regeocode.formattedAddress;
+	$scope.myLocation=result.regeocode.formattedAddress;
+         })
+        
+
+    });//plugin
+    
+    
+    ////////////////////////////////////////////////
+    $ionicModal.fromTemplateUrl("tpls/map.html",{
+						scope:$scope
+					})
+					.then(function(modal){$scope.modal2=modal});
+					$scope.showModal=function(){
+						$scope.modal2.show();
+						(function(){
+            var iframe = document.getElementById('test').contentWindow;
+            setTimeout(function(){         	
+            	
+                iframe.postMessage('hello','http://m.amap.com/picker/');
+            },500)
+            window.addEventListener("message", function(e){
+               $scope.detailLocation=e.data;
+               console.log( $scope.detailLocation);
+//                alert(JSON.stringify(e.data))
+					
+                $scope.modal2.hide();
+              
+            }, false);
+            }()	)
+					}
+    ////////////////////////////////////////////////
+    
+    
+    
+				
+			})//taxcontroller
+           
+			</script>
+	</body>
+
+</html>

@@ -1,0 +1,31 @@
+<ion-view view-title="聊天页面{{currentChatItem}}" ng-controller="chatCtrl">
+	<ion-content class="has-header-bar" style="background:#efefef" >
+			<div class="padding">
+				<li class="clear clearfix chat-list" 
+					ng-repeat="item in chatMsg track by $index" 
+					ng-class="{'pull-right':item.type,'pull-left':!item.type}"
+					
+					>
+					<img src="images/w1.jpg" alt="" 
+						 class="avatar" 
+						 ng-if="!item.type"
+						 ng-class="{'pull-left':!item.type}" />
+					<img src="images/w2.jpg" alt="" 
+						 class="avatar" 
+						 ng-if="item.type"
+						 ng-class="{'pull-right':item.type}" />
+					<div class="chat-wrap"  ng-class="{'mr':item.type,'ml':!item.type}">
+						{{item.msg}}
+						
+					</div>
+					
+				</li>
+				
+			</div>
+			
+	</ion-content>
+	<div class="write-box row">
+		<textarea name="" id="" cols="30" rows="2" ng-model="msg" class="col" ng-focus="handleFocus()"  ng-blur="handleBlur()"></textarea>
+		<button class="button button-balanced" ng-click="sendMsg()">发送</button>
+	</div>
+</ion-view>

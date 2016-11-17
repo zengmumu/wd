@@ -1,0 +1,57 @@
+
+<ion-view view-title="出行" ng-controller="taxCtrl">
+	<ion-content class="has-header-bar">
+		<div class="list">
+			<div class="item item-input">
+				现在的位置：<input type="text" id="myLocation" ng-model="myLocation" />
+			</div>
+			<div class="item item-input" ng-click="showModal()">
+				到哪里去：<input type="text" ng-model="detailLocation.address" /> 
+			</div>
+			<a  class="button button-assertive" href="http://m.amap.com/navi/?start=116.403124,39.940693&dest={{detailLocation.location}}&destName=我的位置&naviBy=car&key=5efbda3075d474c2aa578775121667f0">查看路线</a>
+		<!--	<a  class="button button-assertive" href="http://m.amap.com/navi/?start=116.403124,39.940693&dest={{detailLocation.location}}&destName=我的位置&naviBy=car&key=5efbda3075d474c2aa578775121667f0">查看路线</a>-->
+		</div>
+		
+		
+		 <!--<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=5efbda3075d474c2aa578775121667f0"></script>
+   <script type="text/javascript">    
+   
+    var lalo=[];     
+    AMap.plugin('AMap.Geocoder',function(){    	
+        var geocoder = new AMap.Geocoder({
+            city: "010"//城市，默认：“全国”
+        });
+        
+          //获取地理位置
+  function getLocation(){
+        if (navigator.geolocation){        	
+            navigator.geolocation.getCurrentPosition(function(position){
+             lalo=[ position.coords.latitude, position.coords.longitude]	
+            });
+        }else{
+           lalo=[116.39,35.9]
+        }
+    }
+		getLocation();
+    //获取地址位置
+    if(lalo.length<=0){lalo=[116.30,39.9]};
+  
+         geocoder.getAddress(lalo,function(status,result){
+         	console.log(result.regeocode);
+          myLocation.value=result.regeocode.formattedAddress;
+         })
+        
+
+    });
+   </script>-->
+		
+		
+	</ion-content>
+	</ion-view>
+	
+	
+  
+
+
+		
+

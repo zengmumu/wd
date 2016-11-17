@@ -1,0 +1,20 @@
+<ion-view view-title="通讯录" ng-controller="cityCtrl">
+	<style type="text/css">
+	
+</style>
+ <ul class="abcNav">
+            <li ng-repeat="x in abcArr" ng-bind="x" class="{{x}}" ng-class="{'active':$index==curIndex}" ng-click="goABC($index,$event)"></li>
+    </ul>
+<ion-content class="has-header" on-scroll="checkPosition()" delegate-handle="mainScroll">
+   <div ng-repeat="city in citys">
+       <div class="item item-divider dividerABC" ng-bind="city.key"></div>
+       <ion-list>
+           <ion-item ng-repeat="item in city.list">
+               {{item}}
+           </ion-item>
+       </ion-list>
+   </div>
+
+</ion-content>
+
+</ion-view>
